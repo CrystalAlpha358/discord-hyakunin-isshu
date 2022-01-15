@@ -33,7 +33,7 @@ Discordで百人一首の勉強ができる... かも?
     省略時は `True` です。
 - `/search <regex> [target] [testmode] [ephemeral]`
   - `regex` に指定した正規表現にマッチする句を検索し、ヒットした一覧を表示します。  
-    `target` には検索する対象を指定することができます。[ここ](#Supplement-検索対象について)を参照してください。  
+    `target` には検索する対象を指定することができます。[ここ](#Supplement-検索対象について)を参照してください。
     省略時は `phrase` です。  
     `testmode` は `/random` と同じです。
 
