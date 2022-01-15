@@ -117,7 +117,7 @@ async def isshu_random(
 @bot.slash_command(guild_ids=GUILD_ID, name='get')
 async def isshu_getByNo(
     ctx,
-    number:    Option(int,  '歌番号を指定します(1~100)'),
+    number:    Option(int,  '歌番号を指定します(1~100)', min_value=1, max_value=100),
     ephemeral: OPT['ephemeral']
 ):
     """歌番号から句を取得し詳細を表示します"""
