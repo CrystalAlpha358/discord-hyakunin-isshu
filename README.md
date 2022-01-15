@@ -1,7 +1,7 @@
 discord-hyakunin-isshu
 ===
 
-Discordで百人一首の勉強ができる... かも?
+Discordで百人一首の勉強ができる... かも？
 
 ## Description
 テストの為に急遽作ることになったDiscord用百人一首Botです。  
