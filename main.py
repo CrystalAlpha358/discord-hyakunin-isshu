@@ -36,14 +36,14 @@ def err(string: str, code: int) -> None:
         sys.exit(code)
 
 
-def expandDictInList(lis: list, base: list) -> dict:
+def expand_dict_in_list(lis: list, base: list) -> dict:
     ret = {}
     for key in base:
         ret[key] = [dic.get(key) for dic in lis]
     return ret
 
 
-def getDataByNo(index: int, data: dict) -> dict:
+def get_data_by_no(index: int, data: dict) -> dict:
     ret = {}
 
     for key in ['first', 'second', 'author']:
@@ -58,8 +58,8 @@ def getDataByNo(index: int, data: dict) -> dict:
     return ret
 
 
-def makeEmbed(index: int, data: list) -> discord.Embed:
-    dt = getDataByNo(index, data)
+def make_embed(index: int, data: list) -> discord.Embed:
+    dt = get_data_by_no(index, data)
     au = dt['author']
 
     embed = discord.Embed(title=f"{dt['first']['origin']}\n{dt['second']['origin']}")
@@ -79,7 +79,7 @@ def makeEmbed(index: int, data: list) -> discord.Embed:
     return embed
 
 
-async def sendError(ctx, msg: str) -> None:
+async def send_error(ctx, msg: str) -> None:
     await ctx.respond(f':no_entry_sign: {msg}', ephemeral=True)
 
 
@@ -102,11 +102,11 @@ bot = discord.Bot(intents=intents)
 print('Loading JSON file...')
 try:
     with open(JSON, 'r') as f:
-        DATA = expandDictInList(json.load(f)['data'], [
+        DATA = expand_dict_in_list(json.load(f)['data'], [
             'first', 'second', 'begin', 'mean', 'author', 'test'
         ])
         for key in ['first', 'second', 'author']:
-            DATA[key] = expandDictInList(DATA[key], ['origin', 'kana'])
+            DATA[key] = expand_dict_in_list(DATA[key], ['origin', 'kana'])
 except Exception as e:
     err(f"Loading the JSON file {JSON}:\n{e}", 1)
 
@@ -126,7 +126,7 @@ async def isshu_random(
 ):
     """ランダムに一句を選び詳細を表示します"""
     no = DATA['test'][randint(0, len(DATA['test']) - 1)] if testmode else randint(0, 99)
-    await ctx.respond(embed=makeEmbed(no, DATA), ephemeral=ephemeral)
+    await ctx.respond(embed=make_embed(no, DATA), ephemeral=ephemeral)
 
 
 @bot.slash_command(guild_ids=GUILD_ID, name='get')
@@ -137,9 +137,9 @@ async def isshu_getByNo(
 ):
     """歌番号から句を取得し詳細を表示します"""
     if number < 1 or number > 100:
-        await sendError(ctx, '指定された値は範囲外です')
+        await send_error(ctx, '指定された値は範囲外です')
     else:
-        await ctx.respond(embed=makeEmbed(number - 1, DATA), ephemeral=ephemeral)
+        await ctx.respond(embed=make_embed(number - 1, DATA), ephemeral=ephemeral)
 
 
 @bot.slash_command(guild_ids=GUILD_ID, name='search')
@@ -172,7 +172,7 @@ async def isshu_search(
         if pos == 0 or target.startswith('second_'):
             data += DATA['second'][kana]
     else:
-        await sendError(ctx, '指定された対象は存在しません')
+        await send_error(ctx, '指定された対象は存在しません')
         return
     data = [s.replace(' ', '') for s in data]
 
@@ -188,7 +188,7 @@ async def isshu_search(
                     + e.pattern[start:e.pos + 1].replace('``', r'\`\`')
                     + '`` *←[問題箇所]*\n')
         msg += f'メッセージ:\n```\n{e.msg}\n```'
-        await sendError(ctx, msg)
+        await send_error(ctx, msg)
         return
 
     result = sorted(list(set([
@@ -285,7 +285,7 @@ async def isshu_question(
             msg = ':o: 正解！' if no == correct else ':x: 不正解...'
             await interaction.response.send_message(
                 content=msg,
-                embed=makeEmbed(choices[correct], DATA),
+                embed=make_embed(choices[correct], DATA),
                 ephemeral=True
             )
 
