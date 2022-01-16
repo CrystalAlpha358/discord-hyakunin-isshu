@@ -1,4 +1,5 @@
 from random import randint, sample as rndsample
+import asyncio
 import json
 import os
 import re
@@ -25,6 +26,7 @@ OPT = {
     )
 }
 PAGE_SIZE = 10
+MAX_TIMEOUT = 600
 
 
 # Definition
@@ -83,8 +85,8 @@ async def sendError(ctx, msg: str) -> None:
 
 # Class
 class DropdownView(discord.ui.View):
-    def __init__(self, item):
-        super().__init__()
+    def __init__(self, item, timeout):
+        super().__init__(timeout=timeout)
         self.add_item(item)
 
 
@@ -232,6 +234,10 @@ async def isshu_question(
         bool, '下の句から上の句を選ぶモードにします(既定値: False)',
         required=False, default=False
     ),
+    timeout: Option(
+        int, f'メニューが期限切れになるまでの秒数を指定します(10~{MAX_TIMEOUT}, 既定値: 最大値)',
+        required=False, min_value=10, max_value=MAX_TIMEOUT, default=MAX_TIMEOUT
+    ),
     testmode: OPT['testmode'],
     ephemeral: OPT['ephemeral']
 ):
@@ -239,6 +245,25 @@ async def isshu_question(
     baselist = [i for i, v in enumerate(DATA['test']) if v] if testmode else range(100)
     choices = rndsample(baselist, choices_cnt)
     correct = randint(0, choices_cnt - 1)
+    sent_msg = None
+    task = None
+
+    async def send_disabled_dropdown(msg: str):
+        try:
+            return await sent_msg.edit_original_message(view=DropdownView(discord.ui.Select(
+                placeholder=msg,
+                disabled=True,
+                options=[discord.SelectOption(label='dummy', value='dummy')]
+            ), timeout))
+        except (discord.HTTPException, discord.Forbidden):
+            return None
+
+    async def timed_out():
+        try:
+            await asyncio.sleep(timeout)
+        except asyncio.CancelledError:
+            return
+        await send_disabled_dropdown('[期限切れです]')
 
     class Question(discord.ui.Select):
         def __init__(self):
@@ -255,24 +280,35 @@ async def isshu_question(
                 i += 1
 
         async def callback(self, interaction: discord.Interaction):
-            msg = ':o: 正解！' if int(self.values[0]) == correct else ':x: 不正解...'
+            no = int(self.values[0])
+
+            msg = ':o: 正解！' if no == correct else ':x: 不正解...'
             await interaction.response.send_message(
                 content=msg,
                 embed=makeEmbed(choices[correct], DATA),
                 ephemeral=True
             )
 
-    await ctx.respond(
+            task.cancel()
+            await send_disabled_dropdown(
+                f"{DATA['first' if swapmode else 'second']['origin'][choices[no]]}"
+                .replace(' ', '')
+            )
+
+    sent_msg = await ctx.respond(
+        content=f":question: この{'下' if swapmode else '上'}の句に対応する"
+                + f"__**{'上' if swapmode else '下'}の句**__を選択してください",
         embed=discord.Embed(
             # noqa
-            title=f"Q._{DATA['second' if swapmode else 'first']['origin'][choices[correct]]}"
-                  .replace(' ', '').replace('_', ' '),
-            description=f"この{'下' if swapmode else '上'}の句に対応する"
-                        + f"__**{'上' if swapmode else '下'}の句**__を選択してください"
+            title=f"{DATA['second' if swapmode else 'first']['origin'][choices[correct]]}"
+                  .replace(' ', ''),
+            description=f'※メニューは約{timeout}秒間有効です'
         ),
-        view=DropdownView(Question()),
+        view=DropdownView(Question(), timeout),
         ephemeral=ephemeral
     )
+
+    task = asyncio.create_task(timed_out())
 
 # Connect
 print('Connecting...')
