@@ -37,6 +37,12 @@ Discordで百人一首の勉強ができる... かも？
     省略時は `phrase` です。  
     句は歴史的仮名遣いであることに注意してください。  
     `testmode` は `/random` と同じです。
+- `/question [choices_cnt=2-10] [swapmode=True|False] [timeout=10-600] [testmode] [ephemeral]`
+  - 問題を生成します。  
+    デフォルトでは上の句から下の句を選ぶモードですが、`swapmode` を `True` にすると下の句から上の句を選ぶモードになります。  
+    `choices_cnt` は選択肢の数を `2` 〜 `10` 個の間で指定できます。省略時は `4` です。  
+    `timeout` は選択メニューが期限切れになるまでの秒数を `10 ` 〜 `600` 秒(10分)の間で指定します。省略時は `600` です。  
+    `testmode` は上記2つと同じです。
 
 ### Common options
 - `... [ephemeral=True|False]`
@@ -58,4 +64,4 @@ Discordで百人一首の勉強ができる... かも？
 | `author/kana`        | 作者、ひらがな   |
 
 ## TODO
-- [ ] 簡単な問題生成 (上の句から下の句をn択で選べみたいな)
+- [x] 簡単な問題生成 (上の句から下の句をn択で選べみたいな)
