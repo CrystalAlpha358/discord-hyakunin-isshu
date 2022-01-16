@@ -27,24 +27,23 @@ Discordで百人一首の勉強ができる... かも？
 ## Commands
 - `/get <number> [ephemeral]`
   - 歌番号 `number` に対応する句の詳細を表示します。
-- `/random [testmode=True|False]`
+- `/random [testmode] [ephemeral]`
   - 句の中からランダムに一つ句を選び、その詳細を表示します。  
-    `testmode` が `True` の場合、プリントに表記された50首のみが対象になります。
-    省略時は `True` です。
 - `/search <regex> [target] [testmode] [ephemeral]`
   - `regex` に指定した正規表現にマッチする句を検索し、ヒットした一覧を表示します。  
     `target` には検索する対象を指定することができます。[ここ](#Supplement-検索対象について)を参照してください。
     省略時は `phrase` です。  
     句は歴史的仮名遣いであることに注意してください。  
-    `testmode` は `/random` と同じです。
 - `/question [choices_cnt=2-10] [swapmode=True|False] [timeout=10-600] [testmode] [ephemeral]`
   - 問題を生成します。  
     デフォルトでは上の句から下の句を選ぶモードですが、`swapmode` を `True` にすると下の句から上の句を選ぶモードになります。  
     `choices_cnt` は選択肢の数を `2` 〜 `10` 個の間で指定できます。省略時は `4` です。  
     `timeout` は選択メニューが期限切れになるまでの秒数を `10` 〜 `600` 秒(10分)の間で指定します。省略時は `600` です。  
-    `testmode` は上記2つと同じです。
 
 ### Common options
+- `... [testmode=True|False]`
+  - `True` の場合、プリントに表記された50首のみが対象になります。  
+    省略時は `True` です。
 - `... [ephemeral=True|False]`
   - `True` の場合、他人に見えないようにエフェメラルレスポンスで返答します。  
     `False` の場合は通常のメッセージと同じように他人から閲覧することができます。  
