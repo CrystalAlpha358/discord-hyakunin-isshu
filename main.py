@@ -248,8 +248,8 @@ async def isshu_question(
     sent_msg = None
     task = None
 
-    async def send_answer(msg: str):
-        return await interaction.response.send_message(
+    async def send_answer(method, msg: str):
+        return await method(
             content=msg,
             embed=make_embed(choices[correct], DATA),
             ephemeral=True
@@ -265,12 +265,12 @@ async def isshu_question(
         except (discord.HTTPException, discord.Forbidden):
             return None
 
-    async def timed_out():
+    async def timed_out(method):
         try:
             await asyncio.sleep(timeout)
         except asyncio.CancelledError:
             return
-        await send_answer(':x: 時間切れです...')
+        await send_answer(method, ':x: 時間切れです...')
         await send_disabled_dropdown('[期限切れです]')
 
     class Question(discord.ui.Select):
@@ -290,7 +290,8 @@ async def isshu_question(
         async def callback(self, interaction: discord.Interaction):
             no = int(self.values[0])
 
-            await send_answer(':o: 正解！' if no == correct else ':x: 不正解...')
+            await send_answer(interaction.response.send_message,
+                              ':o: 正解！' if no == correct else ':x: 不正解...')
 
             task.cancel()
             await send_disabled_dropdown(
@@ -311,7 +312,7 @@ async def isshu_question(
         ephemeral=ephemeral
     )
 
-    task = asyncio.create_task(timed_out())
+    task = asyncio.create_task(timed_out(ctx.respond))
 
 # Connect
 print('Connecting...')
