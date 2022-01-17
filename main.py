@@ -125,7 +125,8 @@ async def isshu_random(
     ephemeral: OPT['ephemeral']
 ):
     """ランダムに一句を選び詳細を表示します"""
-    no = DATA['test'][randint(0, len(DATA['test']) - 1)] if testmode else randint(0, 99)
+    baselist = [i for i, v in enumerate(DATA['test']) if v] if testmode else range(100)
+    no = rndsample(baselist, 1)[0]
     await ctx.respond(embed=make_embed(no, DATA), ephemeral=ephemeral)
 
 
