@@ -44,7 +44,7 @@ Discordで百人一首の勉強ができる... かも？
 ### Common options
 - `... [testmode:True|False]`
   - `True` の場合、プリントに表記された50首のみが対象になります。  
-    省略時は `True` です。
+    省略時は `False` です。
 - `... [ephemeral:True|False]`
   - `True` の場合、他人に見えないようにエフェメラルレスポンスで返答します。  
     `False` の場合は通常のメッセージと同じように他人から閲覧することができます。  

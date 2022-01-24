@@ -16,8 +16,8 @@ BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 OPT = {
     'testmode': Option(
         bool,
-        'プリントに表記されている50首のみ対象にします(既定値: True)',
-        required=False, default=True
+        'プリントに表記されている50首のみ対象にします(既定値: False)',
+        required=False, default=False
     ),
     'ephemeral': Option(
         bool,
